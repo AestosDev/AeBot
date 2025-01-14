@@ -3,7 +3,7 @@ name: Deploy Bot
 on:
   push:
     branches:
-      - main  # Ersetze "main" durch den Branchnamen, wenn nötig
+      - main
 
 env:
   DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -11,20 +11,22 @@ env:
 
 jobs:
   run_bot:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest 
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up Mono Runtime
-        uses: actions/setup-msbuild@v1
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v3
         with:
-          msbuild-version: 'latest'
+          dotnet-version: '8.0' 
 
-      - name: Install Dependencies
-        run: |
-          apt-get update -y
-          apt-get install -y mono-devel
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build project
+        run: dotnet build --configuration Release
 
       - name: Run Bot
-        run: mono Bot.exe
+        run: dotnet run --configuration Release 
