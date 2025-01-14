@@ -1,0 +1,30 @@
+name: Deploy Bot
+
+on:
+  push:
+    branches:
+      - main  # Ersetze "main" durch den Branchnamen, wenn nötig
+
+env:
+  DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  LANGUAGE: "DE"
+
+jobs:
+  run_bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Mono Runtime
+        uses: actions/setup-msbuild@v1
+        with:
+          msbuild-version: 'latest'
+
+      - name: Install Dependencies
+        run: |
+          apt-get update -y
+          apt-get install -y mono-devel
+
+      - name: Run Bot
+        run: mono Bot.exe
